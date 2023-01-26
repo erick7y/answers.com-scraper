@@ -1,9 +1,12 @@
 from playwright.sync_api import sync_playwright
 from playwright._impl._api_types import TimeoutError as PlaywrightTimeoutError
 
+import json
+import jsonlines
+
 def run(playwright, urls):
     chromium = playwright.chromium
-    browser = chromium.launch(headless=False)
+    browser = chromium.launch(headless=True)
     page = browser.new_page()
     
     i = 0
@@ -42,16 +45,15 @@ def run(playwright, urls):
         for answer in page.locator('xpath=//*[@id="other-answers"]//*[contains(@class, "markdownStyles undefined")]').all():
             answers.append(answer.text_content())
         
-        print('************')
-        print('* Scraped. *')
-        print('************')
+        print(f'\033[1;32mScraped\033[1;0m: {urls[i]}')
         
-        data = {
+        data = json.dumps({
             'title': title,
             'answers': [best_answer] + answers
-        }
+        })
         
-        print(data)
+        with jsonlines.open('data.jsonl', mode='a') as writer:
+            writer.write(data)
         
         i += 1
     
