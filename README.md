@@ -1,5 +1,5 @@
 # Answers.com Scraper
-Um scraper do site de perguntas e respostas [Answers.com](https://answers.com).
+Um scraper do site de perguntas e respostas [Answers.com](https://answers.com). Este scraper extrai o título e as respostas das perguntas.
 
 ## Uso
 * Instale os requisitos: `pip3 install -r requirements.txt`
