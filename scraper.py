@@ -1,24 +1,27 @@
 from playwright.sync_api import sync_playwright
 from playwright._impl._api_types import TimeoutError as PlaywrightTimeoutError
 
+from random_user_agent.user_agent import UserAgent
+from random_user_agent.params import SoftwareName, OperatingSystem
+
 import json
 import jsonlines
 
+user_agent_rotator = UserAgent(limit=1000)
+
 def run(playwright, urls):
     chromium = playwright.chromium
-    browser = chromium.launch(headless=True)
-    page = browser.new_page()
+    browser = chromium.launch(headless=False)
     
-    i = 0
-    urls_length = len(urls)
-    while i < urls_length:
-        page.goto(urls[i])
+    for url in urls:
+        context = browser.new_context(user_agent=user_agent_rotator.get_random_user_agent())
+        page = context.new_page()
+        page.goto(url)
         
-        if i == 0:
-            '''
-            Rejeita os cookies. Necessário apenas na primeira página da lista de URLs.
-            '''
-            page.click('#onetrust-reject-all-handler', timeout=15000)
+        '''
+        Rejeita os cookies. Necessário apenas na primeira página da lista de URLs.
+        '''
+        page.click('#onetrust-reject-all-handler', timeout=15000)
         
         '''
         Scraping the title.
@@ -45,7 +48,7 @@ def run(playwright, urls):
         for answer in page.locator('xpath=//*[@id="other-answers"]//*[contains(@class, "markdownStyles undefined")]').all():
             answers.append(answer.text_content())
         
-        print(f'\033[1;32mScraped\033[1;0m: {urls[i]}')
+        print(f'\033[1;32mScraped\033[1;0m: {url}')
         
         data = json.dumps({
             'title': title,
@@ -55,11 +58,13 @@ def run(playwright, urls):
         with jsonlines.open('data.jsonl', mode='a') as writer:
             writer.write(data)
         
-        i += 1
+        context.close()
     
     browser.close()
 
 with sync_playwright() as playwright:
     urls = ['https://www.answers.com/finance/What_did_managers_and_owners_want_for_their',
-            'https://www.answers.com/general-science/What_part_of_the_red_blood_cell_gives_it_the_color_red']
+            'https://www.answers.com/general-science/What_part_of_the_red_blood_cell_gives_it_the_color_red',
+            'https://math.answers.com/general-science/What_the_formula_for_caculating_density',
+            'https://www.answers.com/general-science/Inquiry_is_a_process_prompted_by_a']
     run(playwright, urls)
