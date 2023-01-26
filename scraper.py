@@ -11,7 +11,7 @@ user_agent_rotator = UserAgent(limit=1000)
 
 def run(playwright, urls):
     chromium = playwright.chromium
-    browser = chromium.launch(headless=False)
+    browser = chromium.launch(headless=True)
     
     for url in urls:
         context = browser.new_context(user_agent=user_agent_rotator.get_random_user_agent())
