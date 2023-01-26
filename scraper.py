@@ -14,6 +14,9 @@ def run(playwright, urls):
     browser = chromium.launch(headless=True)
     
     for url in urls:
+        
+        print(f'Scraping {url} ...')
+        
         context = browser.new_context(user_agent=user_agent_rotator.get_random_user_agent())
         page = context.new_page()
         page.goto(url)
