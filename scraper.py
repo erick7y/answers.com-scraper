@@ -72,8 +72,6 @@ def run(urls):
 
 if __name__ == '__main__':
     
-    from time import time
-    
     urls = ['https://www.answers.com/finance/What_did_managers_and_owners_want_for_their',
             'https://www.answers.com/general-science/What_part_of_the_red_blood_cell_gives_it_the_color_red',
             'https://math.answers.com/general-science/What_the_formula_for_caculating_density',
