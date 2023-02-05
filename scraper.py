@@ -51,8 +51,6 @@ def run(playwright, urls):
         for answer in page.locator('xpath=//*[@id="other-answers"]//*[contains(@class, "markdownStyles undefined")]').all():
             answers.append(answer.text_content())
         
-        print(f'\033[1;32mScraped\033[1;0m: {url}')
-        
         data = json.dumps({
             'title': title,
             'answers': [best_answer] + answers
@@ -60,6 +58,8 @@ def run(playwright, urls):
         
         with jsonlines.open('data.jsonl', mode='a') as writer:
             writer.write(data)
+        
+        print(f'\033[1;32mScraped\033[1;0m: {url}')
         
         context.close()
     
